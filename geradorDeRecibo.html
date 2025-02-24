@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Recibos - Alisson Celulares</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .input-group-text {
+            font-size: 1.2rem;
+        }
+        #alert-message {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <div class="container my-5">
+        <h2 class="text-center">Gerador de Recibos - Alisson Celulares</h2>
+        <form id="reciboForm">
+            <div class="mb-3">
+                <label for="data" class="form-label">Data</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-calendar"></i></span>
+                    <input type="date" class="form-control" name="data" required>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="nome" class="form-label">Nome</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-person"></i></span>
+                    <input type="text" class="form-control" name="nome" required>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="cpf" class="form-label">CPF</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-hash"></i></span>
+                    <input type="text" class="form-control" name="cpf" required oninput="formatCPF(this)">
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="endereco" class="form-label">Endereço</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-house-door"></i></span>
+                    <input type="text" class="form-control" name="endereco" required>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="bairro" class="form-label">Bairro</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
+                    <input type="text" class="form-control" name="bairro" required>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="cidade" class="form-label">Cidade</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-geo"></i></span>
+                    <input type="text" class="form-control" name="cidade" required>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="uf" class="form-label">UF</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-map"></i></span>
+                    <input type="text" class="form-control" name="uf" maxlength="2" required>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="cep" class="form-label">CEP</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-tag"></i></span>
+                    <input type="text" class="form-control" name="cep" required oninput="formatCEP(this)">
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="imei" class="form-label">IMEI</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-phone"></i></span>
+                    <input type="text" class="form-control" name="imei" required>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="nome_aparelho" class="form-label">Nome do Aparelho</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-phone-fill"></i></span>
+                    <input type="text" class="form-control" name="nome_aparelho" required>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="marca" class="form-label">Marca</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-gear"></i></span>
+                    <input type="text" class="form-control" name="marca" required>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="cor" class="form-label">Cor</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-palette"></i></span>
+                    <input type="text" class="form-control" name="cor" required>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="forma_pagamento" class="form-label">Forma de Pagamento</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-credit-card"></i></span>
+                    <input type="text" class="form-control" name="forma_pagamento" required>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="valor_pago" class="form-label">Valor Pago</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-cash-coin"></i></span>
+                    <input type="text" class="form-control" name="valor_pago" required>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="observacoes" class="form-label">Observações</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-pencil"></i></span>
+                    <input type="text" class="form-control" name="observacoes">
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="valor_total" class="form-label">Valor Total</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-wallet2"></i></span>
+                    <input type="text" class="form-control" name="valor_total" required >
+                </div>
+            </div>
+            <button type="submit" class="btn btn-success btn-lg">Gerar Recibo</button>
+        </form>
+        <div id="alert-message" class="alert alert-success position-fixed top-50 start-50 translate-middle" style="z-index: 9999; display: none;">
+            Recibo salvo com sucesso em "Documents/"
+        </div>
+    </div>
+
+    <footer class="text-center py-3 mt-5">
+        <p>Esse sistema foi desenvolvido pelo Assistente Técnico (Guilherme Walisson) para fins comerciais</p>
+    </footer>
+
+    <script>
+        document.getElementById("reciboForm").addEventListener("submit", async function(event) {
+            event.preventDefault();
+            
+            const formData = new FormData(event.target);
+            const data = Object.fromEntries(formData.entries());
+
+            const response = await fetch("http://localhost:3000/gerar-pdf", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data),
+            });
+
+            const result = await response.json();
+            alert(result.message);
+            if (result.link) {
+                const pdfLink = `/pdfs/${result.link.split('/').pop()}`;
+                document.getElementById('alert-message').style.display = 'block';
+                setTimeout(() => {
+                    document.getElementById('alert-message').style.display = 'none';
+                }, 4000);
+            }
+        });
+
+        function formatCPF(input) {
+            let value = input.value.replace(/\D/g, '');
+            if (value.length <= 11) {
+                input.value = value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+            }
+        }
+
+        function formatCEP(input) {
+            let value = input.value.replace(/\D/g, '');
+            if (value.length <= 8) {
+                input.value = value.replace(/(\d{5})(\d{3})/, '$1-$2');
+            }
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
