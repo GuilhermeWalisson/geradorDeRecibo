@@ -132,6 +132,7 @@
                 </div>
             </div>
             <button type="submit" class="btn btn-success btn-lg">Gerar Recibo</button>
+            <a href="/pdfs" class="btn btn-primary btn-lg">Baixar Recibo</a>
         </form>
         <div id="alert-message" class="alert alert-success position-fixed top-50 start-50 translate-middle" style="z-index: 9999; display: none;">
             Recibo salvo com sucesso em "Documents/"
@@ -149,7 +150,7 @@
             const formData = new FormData(event.target);
             const data = Object.fromEntries(formData.entries());
 
-            const response = await fetch("http://localhost:3000/gerar-pdf", {
+            const response = await fetch("http://192.168.0.9:3000/gerar-pdf", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
