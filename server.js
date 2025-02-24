@@ -44,7 +44,7 @@ app.post("/gerar-pdf", async (req, res) => {
 
   try {
     // Carregando o modelo do PDF
-    const modeloBytes = fs.readFileSync("./models_pdf/recibo-modelo.pdf");
+    const modeloBytes = fs.readFileSync("./models_pdf/modelo-3.pdf");
     const pdfDoc = await PDFDocument.load(modeloBytes);
     const page = pdfDoc.getPages()[0];
 
