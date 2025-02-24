@@ -150,7 +150,7 @@
             const formData = new FormData(event.target);
             const data = Object.fromEntries(formData.entries());
 
-            const response = await fetch("https://gerador-de-recibo-nine.vercel.app/gerar-pdf", {
+            const response = await fetch("https://localhost/gerar-pdf", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
