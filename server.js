@@ -141,4 +141,4 @@ app.post("/gerar-pdf", async (req, res) => {
 // Servindo os arquivos da pasta "pdfs" dentro do projeto
 app.use("/pdfs", express.static(projectPdfsPath));
 
-app.listen(3000, () => console.log("Servidor rodando na porta 3000"));
+app.listen(4000, () => console.log("Servidor rodando na porta 3000"));
