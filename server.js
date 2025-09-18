@@ -9,15 +9,29 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// Diretório para salvar os PDFs gerados (Documentos do usuário)
-const userDocumentsPath = path.join(os.homedir(), "Documents", "pdfs");
+app.get('/', (req, res) => {
+  res.send({
+    message: "API online!"
+  })
+  // res.sendFile(__dirname + '/index.html');
+});
+
+// Tentando descobrir a pasta "Documentos" mais robustamente, dependendo do SO
+const homeDir = os.homedir();
+const userDocumentsPath = path.join(homeDir, "Documents", "recibosClientes");
+
+// Verificando qual é o caminho da pasta de "Documentos"
+console.log('Pasta Documentos detectada:', userDocumentsPath);
+
 // Diretório para armazenar os PDFs dentro do projeto
 const projectPdfsPath = path.join(__dirname, "pdfs");
 
-// Certifique-se de que as pastas "pdfs" existam
+// Garantir que as pastas existam
 if (!fs.existsSync(userDocumentsPath)) {
+  console.log('A pasta "recibosClientes" não existe, criando...');
   fs.mkdirSync(userDocumentsPath, { recursive: true });
 }
+
 if (!fs.existsSync(projectPdfsPath)) {
   fs.mkdirSync(projectPdfsPath, { recursive: true });
 }
@@ -40,11 +54,30 @@ app.post("/gerar-pdf", async (req, res) => {
     valor_pago,
     observacoes,
     valor_total,
+    tempo_garantia,
+    cap_armazenamento,
   } = req.body;
+  
 
   try {
     // Carregando o modelo do PDF
-    const modeloBytes = fs.readFileSync("./models_pdf/modelo-3.pdf");
+
+      // Seleção de modelo de garantia
+  let modelPdf = "";
+  if (tempo_garantia == "1") {
+    modelPdf = "./models_pdf/modelo-1.pdf"
+  } 
+  if (tempo_garantia == "3") {
+    modelPdf = "./models_pdf/modelo-3.pdf";
+  }
+  if (tempo_garantia == "6") {
+    modelPdf = "./models_pdf/modelo-6.pdf";
+  }
+  if (tempo_garantia == "1ano") {
+    modelPdf = "./models_pdf/modelo-1ano.pdf";
+  }
+
+    const modeloBytes = fs.readFileSync(modelPdf);
     const pdfDoc = await PDFDocument.load(modeloBytes);
     const page = pdfDoc.getPages()[0];
 
@@ -104,18 +137,26 @@ app.post("/gerar-pdf", async (req, res) => {
     drawText(valor_total, 483.13, 104.85, fontSerifadaBold, defaultSize);
 
     // Gerando o nome do arquivo PDF
-    const pdfFileName = `${nome} - ${nome_aparelho} ${data.replace(
+    const pdfFileName = `${nome} - ${nome_aparelho} (${cap_armazenamento}GB) ${data.replace(
       /[^a-zA-Z0-9]/g,
       "-"
     )}.pdf`;
+
+    // Caminho completo para salvar o PDF
     const pdfFilePath = path.join(userDocumentsPath, pdfFileName);
     const projectPdfFilePath = path.join(projectPdfsPath, pdfFileName);
 
     // Gerando o PDF
     const pdfBytes = await pdfDoc.save();
 
-    // Salvando o PDF na pasta "Documents/pdfs"
-    fs.writeFileSync(pdfFilePath, pdfBytes);
+    // Salvando o PDF na pasta "Documentos"
+    try {
+      fs.writeFileSync(pdfFilePath, pdfBytes);
+      console.log(`PDF salvo com sucesso em: ${pdfFilePath}`);
+    } catch (err) {
+      console.error("Erro ao salvar o PDF na pasta Documentos:", err);
+      return res.status(500).send({ message: "Erro ao salvar o PDF." });
+    }
 
     // Copiando o PDF para a pasta "pdfs" dentro do projeto
     fs.copyFile(pdfFilePath, projectPdfFilePath, (err) => {
@@ -137,6 +178,7 @@ app.post("/gerar-pdf", async (req, res) => {
     res.status(500).send({ message: "Erro ao gerar o PDF." });
   }
 });
+
 
 // Servindo os arquivos da pasta "pdfs" dentro do projeto
 app.use("/pdfs", express.static(projectPdfsPath));
