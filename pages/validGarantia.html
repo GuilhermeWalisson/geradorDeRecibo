@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Verificação de Garantia</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    :root {
+      --verde: #28a745;
+      --vermelho: #dc3545;
+      --cinza-claro: #f8f9fa;
+      --cinza-escuro: #343a40;
+      --azul: #007bff;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--cinza-claro);
+      color: var(--cinza-escuro);
+    }
+
+    .container {
+      max-width: 500px;
+      margin: 40px auto;
+      background-color: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      text-align: center;
+      color: var(--azul);
+    }
+
+    label {
+      display: block;
+      margin-top: 20px;
+      font-weight: 600;
+    }
+
+    select,
+    input[type="date"],
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 8px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+
+    button {
+      background-color: var(--azul);
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      margin-top: 25px;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .resultado {
+      margin-top: 30px;
+      padding: 20px;
+      border-radius: 10px;
+      background-color: #e9ecef;
+    }
+
+    .status-label {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .status {
+      font-size: 20px;
+      padding: 10px;
+      border-radius: 8px;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .valida {
+      background-color: var(--verde);
+      color: white;
+    }
+
+    .expirada {
+      background-color: var(--vermelho);
+      color: white;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        margin: 20px;
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Verificação de Garantia</h1>
+
+    <label for="garantia">Tempo de Garantia:</label>
+    <select id="garantia">
+      <option value="3">3 meses</option>
+      <option value="6">6 meses</option>
+      <option value="12">1 ano</option>
+    </select>
+
+    <label for="dataCompra">Data da Compra:</label>
+    <input type="date" id="dataCompra" max="" />
+
+    <button onclick="validarGarantia()">Verificar Garantia</button>
+
+    <div class="resultado" id="resultado" style="display: none;">
+      <div class="status-label">🔍 Status da Garantia:</div>
+      <div class="status" id="statusText"></div>
+    </div>
+  </div>
+
+  <script>
+    // Define o máximo da data como hoje
+    document.getElementById('dataCompra').max = new Date().toISOString().split('T')[0];
+
+    function validarGarantia() {
+      const garantiaMeses = parseInt(document.getElementById("garantia").value);
+      const dataCompraInput = document.getElementById("dataCompra").value;
+      const resultado = document.getElementById("resultado");
+      const statusText = document.getElementById("statusText");
+
+      if (!dataCompraInput) {
+        statusText.innerText = "Por favor, selecione a data de compra.";
+        statusText.className = "status expirada";
+        resultado.style.display = "block";
+        return;
+      }
+
+      const dataCompra = new Date(dataCompraInput);
+      const dataAtual = new Date();
+
+      // Garantia expira após X meses
+      const dataExpiracao = new Date(dataCompra);
+      dataExpiracao.setMonth(dataExpiracao.getMonth() + garantiaMeses);
+
+      let statusMsg = "";
+      let statusClass = "";
+
+      if (dataAtual <= dataExpiracao) {
+        statusMsg = "✅ A garantia está válida até " + dataExpiracao.toLocaleDateString('pt-BR');
+        statusClass = "status valida";
+      } else {
+        statusMsg = "❌ A garantia expirou em " + dataExpiracao.toLocaleDateString('pt-BR');
+        statusClass = "status expirada";
+      }
+
+      statusText.innerText = statusMsg;
+      statusText.className = statusClass;
+      resultado.style.display = "block";
+    }
+  </script>
+
+</body>
+</html>

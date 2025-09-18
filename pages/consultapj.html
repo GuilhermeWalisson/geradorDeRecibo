@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Consulta de Aparelhos - PayJoy</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background-color: #f9f9f9;
+    }
+    .brand-color {
+      color: #00B86B;
+    }
+    .bg-brand {
+      background-color: #00B86B;
+    }
+    .border-brand {
+      border-color: #00B86B;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center py-10 px-4">
+  <main class="max-w-2xl w-full bg-white p-8 rounded-xl shadow-lg border border-gray-200">
+    <h1 class="text-3xl font-bold brand-color mb-6 text-center">Consulta de Aparelhos PayJoy</h1>
+
+    <!-- Marca -->
+    <label for="marca" class="block text-sm font-semibold text-gray-700 mb-1">Marca:</label>
+    <select 
+      id="marca" 
+      class="w-full p-3 border border-brand rounded-md mb-4 focus:outline-none focus:ring-2 focus:ring-brand"
+      aria-label="Selecione a marca">
+      <option value="" disabled selected>Selecione a marca</option>
+    </select>
+
+    <!-- Modelo -->
+    <label for="modelo" class="block text-sm font-semibold text-gray-700 mb-1">Modelo:</label>
+    <select 
+      id="modelo" 
+      class="w-full p-3 border border-brand rounded-md focus:outline-none focus:ring-2 focus:ring-brand"
+      aria-label="Selecione o modelo"
+      disabled>
+      <option value="" disabled selected>Selecione o modelo</option>
+    </select>
+
+    <!-- Detalhes -->
+    <section id="detalhes" class="mt-6 hidden" aria-live="polite" aria-atomic="true">
+      <h2 class="text-lg font-bold mb-2">Modelo Selecionado:</h2>
+      <p class="text-gray-800"><strong>Família:</strong> <span id="familia"></span></p>
+      <p class="text-gray-800"><strong>Modelo:</strong> <span id="modeloFinal"></span></p>
+    </section>
+  </main>
+
+  <footer class="mt-8 text-sm text-gray-500 text-center w-full">
+    Desenvolvido por <span class="font-semibold brand-color">GuilhermeWalisson</span>
+  </footer>
+
+  <script>
+    const data = {
+      "REALME": [
+        { familia: "11 5G", modelo: "RMX3780" },
+        { familia: "11x 5G", modelo: "RMX3785" },
+        { familia: "12 5G", modelo: "RMX3999" },
+        { familia: "12 Pro+ 5G", modelo: "RMX3840" },
+        { familia: "14 5G", modelo: "RMX5070" },
+        { familia: "14 Pro", modelo: "RMX5056" },
+        { familia: "14 Pro+", modelo: "RMX5051" },
+        { familia: "14T", modelo: "RMX5078" },
+        { familia: "C30s", modelo: "RMX3690" },
+        { familia: "C51", modelo: "RMX3830" },
+        { familia: "C53", modelo: "RMX3760" },
+        { familia: "C55", modelo: "RMX3710" },
+        { familia: "C61", modelo: "RMX3930" },
+        { familia: "C63", modelo: "RMX3939" },
+        { familia: "C65", modelo: "RMX3910" },
+        { familia: "C67", modelo: "RMX3890" },
+        { familia: "C71", modelo: "RMX5303" },
+        { familia: "C75", modelo: "RMX3941" },
+        { familia: "C75 5G", modelo: "RMX3963" },
+        { familia: "C75X", modelo: "RMX5020" },
+        { familia: "Note 50", modelo: "RMX3834" },
+        { familia: "Note 60", modelo: "RMX3933" },
+        { familia: "Note 60x", modelo: "RMX3938" }
+      ],
+      "HONOR": [
+        { familia: "200 Smart 5G / X6b 5G", modelo: "ALT-NX3" },
+        { familia: "X5b / X5b Plus / Play9A (Dual SIM)", modelo: "GFY-LX3" },
+        { familia: "X6a / X6a Plus (Dual Sim)", modelo: "WDY-LX3" },
+        { familia: "X7b", modelo: "CLK-LX2" },
+        { familia: "X7c", modelo: "ALT-LX2" },
+        { familia: "X8b", modelo: "LLY-LX1" },
+        { familia: "X9b / Magic6 Lite", modelo: "ALI-NX1" }
+      ],
+      "OPPO": [
+        { familia: "A20 / A3X", modelo: "CPH2641" },
+        { familia: "A38", modelo: "CPH2579" },
+        { familia: "A40 / A40M / A3", modelo: "CPH2669" },
+        { familia: "A5 Pro 5G", modelo: "CPH2695" },
+        { familia: "A60 LA", modelo: "CPH3669" },
+        { familia: "A80 5G", modelo: "CPH2639" },
+        { familia: "Reno 11F", modelo: "CPH2603" },
+        { familia: "Reno13 F 5G", modelo: "CPH2699" }
+      ],
+      "ITEL": [
+        { familia: "A90", modelo: "A6610L" }
+      ],
+      "TECNO": [
+        { familia: "Camon 19 Pro", modelo: "CI8N" },
+        { familia: "Pova 5G", modelo: "LH7N" },
+        { familia: "Spark 10 5G", modelo: "KI8" },
+        { familia: "Spark 10 Pro", modelo: "KI7" },
+        { familia: "Spark 20", modelo: "KJ5" },
+        { familia: "Spark 20 Pro", modelo: "KJ6" },
+        { familia: "Spark 20 Pro+", modelo: "KJ7" },
+        { familia: "Spark 20C / Spark 20P", modelo: "BG7" },
+        { familia: "Spark 30C", modelo: "KL5" },
+        { familia: "Spark Go (2023)", modelo: "BF7" },
+        { familia: "Spark Go (2024)", modelo: "BG6" },
+        { familia: "Spark Go 2024", modelo: "BG6S" },
+        { familia: "Spark Go 2024", modelo: "BG6M" },
+        { familia: "TCL 60 NXTPAPER", modelo: "(ALCATEL) T626K" },
+        { familia: "TCL 60 SE", modelo: "(ALCATEL) T517H" },
+        { familia: "TCL 60 SE NXTPAPER 5G", modelo: "(ALCATEL) T521D" },
+        { familia: "TCL 605", modelo: "(ALCATEL) T517J" }
+      ],
+      "MOTOROLA": [
+        { familia: "Edge 30 Neo", modelo: "EDGE 30 NEO" },
+        { familia: "Edge 40", modelo: "EDGE 40" },
+        { familia: "Edge 40 Neo", modelo: "EDGE 40 NEO" },
+        { familia: "Edge 50", modelo: "EDGE 50" },
+        { familia: "Edge 50 Fusion", modelo: "EDGE 50 FUSION" },
+        { familia: "Edge 50 Pro", modelo: "EDGE 50 PRO" },
+        { familia: "Edge 60", modelo: "EDGE 60" },
+        { familia: "Edge 60 Fusion", modelo: "EDGE 60 FUSION" },
+        { familia: "Moto E13", modelo: "MOTO E13" },
+        { familia: "Moto E14", modelo: "MOTO E14" },
+        { familia: "Moto E20", modelo: "MOTO E20" },
+        { familia: "Moto E32", modelo: "MOTO E32" },
+        { familia: "Moto G04", modelo: "MOTO G04" },
+        { familia: "Moto G04S", modelo: "MOTO G04S" },
+        { familia: "Moto G05", modelo: "MOTO G05" },
+        { familia: "Moto G14", modelo: "MOTO G14" },
+        { familia: "Moto G15", modelo: "MOTO G15" },
+        { familia: "Moto G22", modelo: "MOTO G22" },
+        { familia: "Moto G23", modelo: "MOTO G23" },
+        { familia: "Moto G24", modelo: "MOTO G24" },
+        { familia: "Moto G24 Power", modelo: "MOTO G24 POWER" },
+        { familia: "Moto G31", modelo: "MOTO G31" },
+        { familia: "Moto G32", modelo: "MOTO G32" },
+        { familia: "Moto G34 5G", modelo: "MOTO G34 5G" },
+        { familia: "Moto G35 5G", modelo: "MOTO G35 5G" },
+        { familia: "Moto G42", modelo: "MOTO G42" },
+        { familia: "Moto G52", modelo: "MOTO G52" },
+        { familia: "Moto G53 5G", modelo: "MOTO G53 5G" },
+        { familia: "Moto G54 5G", modelo: "MOTO G54 5G" },
+        { familia: "Moto G55 5G", modelo: "MOTO G55 5G" },
+        { familia: "Moto G56 5G", modelo: "MOTO G56 5G" },
+        { familia: "Moto G73 5G", modelo: "MOTO G73 5G" },
+        { familia: "Moto G75 5G", modelo: "MOTO G75 5G" },
+        { familia: "Moto G84 5G", modelo: "MOTO G84 5G" }
+      ],
+      "MULTILASER": [
+        { familia: "G Max 2", modelo: "MULTILASER_G_MAX_2_SE_64" },
+        { familia: "G Pro 3S", modelo: "MULTILASER_G_PRO_3S" }
+      ],
+      "SAMSUNG": [
+        { familia: "Galaxy A01", modelo: "SM-A015M" },
+        { familia: "Galaxy A02", modelo: "SM-A022M" },
+        { familia: "Galaxy A04e", modelo: "SM-A042M" },
+        { familia: "Galaxy A04s", modelo: "SM-A047M" },
+        { familia: "Galaxy A05", modelo: "SM-A055F" },
+        { familia: "Galaxy A05", modelo: "SM-A055M" },
+        { familia: "Galaxy A05s", modelo: "SM-A057F" },
+        { familia: "Galaxy A05s", modelo: "SM-A057M" },
+        { familia: "Galaxy A06", modelo: "SM-A065M" },
+        { familia: "Galaxy A06 5G", modelo: "SM-A066M" },
+        { familia: "Galaxy A10", modelo: "SM-A105M" },
+        { familia: "Galaxy A10s", modelo: "SM-A107F" },
+        { familia: "Galaxy A10s", modelo: "SM-A107M" },
+        { familia: "Galaxy A11", modelo: "SM-A115F" },
+        { familia: "Galaxy A11", modelo: "SM-A115M" },
+        { familia: "Galaxy A12", modelo: "SM-A125U" },
+        { familia: "Galaxy A13", modelo: "SM-A135M" },
+        { familia: "Galaxy A14 4G", modelo: "SM-A145F" },
+        { familia: "Galaxy A14 4G", modelo: "SM-A145M" },
+        { familia: "Galaxy A14 5G", modelo: "SM-A146M" },
+        { familia: "Galaxy A14 5G", modelo: "SM-S146VL" },
+        { familia: "Galaxy A15 4G", modelo: "SM-A155M" },
+        { familia: "Galaxy A15 4G", modelo: "SM-A155F" },
+        { familia: "Galaxy A15 5G", modelo: "SM-A156M" },
+        { familia: "Galaxy A16 4G", modelo: "SM-A165M" },
+        { familia: "Galaxy A16 5G", modelo: "SM-A166M" },
+        { familia: "Galaxy A20", modelo: "SM-A205F" },
+        { familia: "Galaxy A20", modelo: "SM-A205G" },
+        { familia: "Galaxy A20", modelo: "SM-A205GN" },
+        { familia: "Galaxy A20", modelo: "SM-A205W" },
+        { familia: "Galaxy A20", modelo: "SM-A205U" },
+        { familia: "Galaxy A20", modelo: "SM-A205U1" },
+        { familia: "Galaxy A20", modelo: "SM-S205DL" },
+        { familia: "Galaxy A20s", modelo: "SM-A207M" },
+        { familia: "Galaxy A22", modelo: "SM-A225M" },
+        { familia: "Galaxy A23", modelo: "SM-A235M" },
+        { familia: "Galaxy A23 5G", modelo: "SM-A236M" },
+        { familia: "Galaxy A24", modelo: "SM-A245M" },
+        { familia: "Galaxy A25 5G", modelo: "SM-A256E" },
+        { familia: "Galaxy A26 5G", modelo: "SM-A266M" },
+        { familia: "Galaxy A30", modelo: "SM-A305F" },
+        { familia: "Galaxy A30s", modelo: "SM-A307GT" },
+        { familia: "Galaxy A32", modelo: "SM-A325M" },
+        { familia: "Galaxy A33 5G", modelo: "SM-A336M" },
+        { familia: "Galaxy A34", modelo: "SM-A346M" },
+        { familia: "Galaxy A35 5G", modelo: "SM-A356E" },
+        { familia: "Galaxy A36 5G", modelo: "SM-A366E" },
+        { familia: "Galaxy A50", modelo: "SM-A505G" },
+        { familia: "Galaxy A50", modelo: "SM-A505F" },
+        { familia: "Galaxy A51", modelo: "SM-A515F" },
+        { familia: "Galaxy A54 5G", modelo: "SM-A546E" },
+        { familia: "Galaxy A55 5G", modelo: "SM-A556E" },
+        { familia: "Galaxy A56 5G", modelo: "SM-A566E" },
+        { familia: "Galaxy A70", modelo: "SM-A7050" },
+        { familia: "Galaxy J6", modelo: "SM-J600G" },
+        { familia: "Galaxy M15", modelo: "SM-M156B" },
+        { familia: "Galaxy M35 5G", modelo: "SM-M356B" },
+        { familia: "Galaxy M53", modelo: "SM-M536B" },
+        { familia: "Galaxy M55 5G", modelo: "SM-M556B" },
+        { familia: "Galaxy S20 FE 5G", modelo: "SM-G781B" },
+        { familia: "Galaxy S21 FE", modelo: "SM-G990E" },
+        { familia: "Galaxy Z Fold4", modelo: "SM-F936U" }
+      ],
+      "INFINIX": [
+        { familia: "Hot 40 Pro", modelo: "X6837" },
+        { familia: "Hot 50", modelo: "X6882" },
+        { familia: "Hot 50 Pro", modelo: "X6881" },
+        { familia: "Hot 50i", modelo: "X6531" },
+        { familia: "Smart 8", modelo: "X6525" },
+        { familia: "Smart 9", modelo: "X6532" },
+        { familia: "Spark 10 5G", modelo: "KI8" }
+      ],
+      "HUAWEI": [
+        { familia: "Nova 10 SE / Nova 12 SE", modelo: "BNE-LX1" },
+        { familia: "Nova 10 SE / Nova 12 SE", modelo: "BNE-LX3" }
+      ],
+      "XIAOMI": [
+        { familia: "Poco C71", modelo: "25028PC03G" },
+        { familia: "Poco C75", modelo: "2410FPCC5G" },
+        { familia: "Poco X6 5G", modelo: "23122PCD1G" },
+        { familia: "Poco X6 Pro", modelo: "2311DRK48G" },
+        { familia: "Poco X7", modelo: "24095PCADG" },
+        { familia: "Pova 5G", modelo: "TECNO LH7N" },
+        { familia: "Redmi 10A", modelo: "220233L2G" },
+        { familia: "Redmi 12", modelo: "23053RN02L" },
+        { familia: "Redmi 12", modelo: "23053RN02A" },
+        { familia: "Redmi 12", modelo: "23053RN02Y" },
+        { familia: "Redmi 12 5G", modelo: "23076RN8DY" },
+        { familia: "Redmi 12 5G", modelo: "23077RABDC" },
+        { familia: "Redmi 13 /13x", modelo: "24049RN28L" },
+        { familia: "Redmi 13 /13x", modelo: "2404ARN45A" },
+        { familia: "Redmi 13C", modelo: "23106RN0DA" },
+        { familia: "Redmi 13C", modelo: "23100RN82L" },
+        { familia: "Redmi 13C", modelo: "23108RN04Y" },
+        { familia: "Redmi 13C", modelo: "2311DRN14I" },
+        { familia: "Redmi 14C", modelo: "2409BRN2CL" },
+        { familia: "Redmi 14C", modelo: "2409BRN2CA" },
+        { familia: "Redmi 9A", modelo: "M2006C3LG" },
+        { familia: "Redmi A3", modelo: "23129RN51X" },
+        { familia: "Redmi A3", modelo: "2312CRNCCL" },
+        { familia: "Redmi A5", modelo: "25028RN03L" },
+        { familia: "Redmi Note 10S", modelo: "M2101K7BL" },
+        { familia: "Redmi Note 11", modelo: "2201117TG" },
+        { familia: "Redmi Note 11S", modelo: "2201117SG" },
+        { familia: "Redmi Note 12", modelo: "23028RA60L" },
+        { familia: "Redmi Note 12", modelo: "23021RAAEG" },
+        { familia: "Redmi Note 12 5G", modelo: "22111317G" },
+        { familia: "Redmi Note 12 Pro", modelo: "2209116AG" },
+        { familia: "Redmi Note 12 Pro+ 5G", modelo: "22101316UG" },
+        { familia: "Redmi Note 12S", modelo: "2303ERA42L" },
+        { familia: "Redmi Note 12S", modelo: "2303CRA44A" },
+        { familia: "Redmi Note 12S", modelo: "23030RAC7Y" },
+        { familia: "Redmi Note 13", modelo: "23124RA7EO" },
+        { familia: "Redmi Note 13 4G", modelo: "23129RA5FL" },
+        { familia: "Redmi Note 13 4G", modelo: "23129RAA4G" },
+        { familia: "Redmi Note 13 5G", modelo: "2312DRAABG" },
+        { familia: "Redmi Note 13 Pro 4G", modelo: "23117RA68G" },
+        { familia: "Redmi Note 13 Pro 5G", modelo: "2312DRA50G" },
+        { familia: "Redmi Note 13 Pro+", modelo: "23090RA98G" },
+        { familia: "Redmi Note 14", modelo: "24117RN76L" },
+        { familia: "Redmi Note 14 5G", modelo: "24094RAD4G" },
+        { familia: "Redmi Note 14 Pro 5G", modelo: "24090RA29G" },
+        { familia: "Redmi Note 14S", modelo: "2502FRA65G" },
+        { familia: "Redmi Note 8", modelo: "REDMI NOTE 8" }
+      ],
+      "TCT": [
+        { familia: "TCL 60 NXTPAPER", modelo: "T626K" },
+        { familia: "TCL 60 SE", modelo: "T517H" },
+        { familia: "TCL 60 SE NXTPAPER 5G", modelo: "T521D" },
+        { familia: "X5b / X5b Plus / Play9A (Dual SIM)", modelo: "T517J" }
+      ]
+    };
+
+    const marcaSelect = document.getElementById('marca');
+    const modeloSelect = document.getElementById('modelo');
+    const detalhesDiv = document.getElementById('detalhes');
+    const familiaSpan = document.getElementById('familia');
+    const modeloSpan = document.getElementById('modeloFinal');
+
+    // Preenche as opções de marcas no select
+    function preencherMarcas() {
+      Object.keys(data).forEach(marca => {
+        const option = document.createElement('option');
+        option.value = marca;
+        option.textContent = marca;
+        marcaSelect.appendChild(option);
+      });
+    }
+
+    // Atualiza a lista de modelos ao selecionar uma marca
+    function atualizarModelos() {
+      const marcaSelecionada = marcaSelect.value;
+      modeloSelect.innerHTML = '<option value="" disabled selected>Selecione o modelo</option>';
+      detalhesDiv.classList.add('hidden');
+      familiaSpan.textContent = '';
+      modeloSpan.textContent = '';
+      modeloSelect.disabled = true;
+
+      if (!marcaSelecionada || !data[marcaSelecionada]) return;
+
+      data[marcaSelecionada].forEach(item => {
+        const option = document.createElement('option');
+        option.value = `${item.familia}|${item.modelo}`;
+        option.textContent = item.familia;
+        modeloSelect.appendChild(option);
+      });
+      modeloSelect.disabled = false;
+    }
+
+    // Exibe os detalhes do modelo selecionado
+    function mostrarDetalhes() {
+      const selectedValue = modeloSelect.value;
+      if (!selectedValue) {
+        detalhesDiv.classList.add('hidden');
+        familiaSpan.textContent = '';
+        modeloSpan.textContent = '';
+        return;
+      }
+      const [familia, modelo] = selectedValue.split('|');
+      familiaSpan.textContent = familia;
+      modeloSpan.textContent = modelo;
+      detalhesDiv.classList.remove('hidden');
+    }
+
+    // Eventos
+    marcaSelect.addEventListener('change', atualizarModelos);
+    modeloSelect.addEventListener('change', mostrarDetalhes);
+
+    // Inicialização
+    preencherMarcas();
+  </script>
+</body>
+</html>

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Recibos - Alisson Celulares</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <script src="../server.js" defer></script>
+    <style>
+        .input-group-text {
+            font-size: 1.2rem;
+        }
+        #alert-message {
+            display: none;
+        }
+
+        #marcaOutros {
+            display: none;
+        }
+
+        .forma-pagamento-outro-container {
+            display: none;
+        }
+        .logo {
+            max-width: 150px;
+            height: auto;
+            justify-content: center;
+            align-items: center;
+            display: flex;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <div class="container my-5">
+        <img src="/assets/images/logo.png" alt="Logo" class="logo">
+        <h2 class="text-center">Gerador de Recibos - Alisson Celulares</h2>
+        <form id="reciboForm">
+            <div class="mb-3">
+                <label for="data" class="form-label">Data de Compra</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-calendar"></i></span>
+                    <input type="date" class="form-control" name="data" required>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="nome" class="form-label">Nome do Cliente</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-person"></i></span>
+                    <input type="text" class="form-control" name="nome" required>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="cpf" class="form-label">CPF</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-hash"></i></span>
+                    <input type="text" class="form-control" name="cpf" placeholder="000.000.000-00" required oninput="formatCPF(this)">
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="endereco" class="form-label">Endereço</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-house-door"></i></span>
+                    <input type="text" class="form-control" placeholder="Rua, Número" name="endereco" required>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="bairro" class="form-label">Bairro</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
+                    <input type="text" class="form-control" name="bairro" required>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="cidade" class="form-label">Cidade</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-geo"></i></span>
+                    <input type="text" class="form-control" name="cidade" required>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="uf" class="form-label">UF</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-map"></i></span>
+                    <input type="text" class="form-control" name="uf" maxlength="2" required>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="cep" class="form-label">CEP</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-tag"></i></span>
+                    <input type="text" class="form-control" name="cep" placeholder="00000-000" required oninput="formatCEP(this)">
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="imei" class="form-label">IMEI</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-phone"></i></span>
+                    <input type="text" class="form-control" name="imei" placeholder="123456789101112131" required>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="nome_aparelho" class="form-label">Nome do Aparelho</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-phone-fill"></i></span>
+                    <input type="text" class="form-control" name="nome_aparelho" required>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="marca" class="form-label">Marca</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-gear"></i></span>
+                    <select class="form-control" name="marca" id="marcaSelect" required>
+                        <option value="REALME">REALME</option>
+                        <option value="XIAOMI">XIAOMI</option>
+                        <option value="REDMI">REDMI</option>
+                        <option value="APPLE">APPLE</option>
+                        <option value="SAMSUNG">SAMSUNG</option>
+                        <option value="OUTRO">Outro</option>
+                    </select>
+                </div>
+            </div>
+            <div id="marcaOutros" class="marca-outro-container mb-3">
+                <label for="marca_outro" class="form-label">Qual é a marca?</label>
+                <input type="text" class="form-control" name="marca_outro" id="marcaOutro">
+            </div>
+            <div class="mb-3">
+                <label for="cor" class="form-label">Cor</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-palette"></i></span>
+                    <input type="text" class="form-control" name="cor" required>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="forma_pagamento" class="form-label">Forma de Pagamento</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-credit-card"></i></span>
+                    <select class="form-control" name="forma_pagamento" id="formaPagamentoSelect" required>
+                        <option value="Boleto">Boleto</option>
+                        <option value="Pix">Pix</option>
+                        <option value="Cartão">Cartão</option>
+                        <option value="À vista">À vista</option>
+                        <option value="OUTRO">Outra Forma de Pagamento</option>
+                    </select>
+                </div>
+            </div>
+            <div id="formaPagamentoOutros" class="forma-pagamento-outro-container mb-3">
+                <label for="forma_pagamento_outro" class="form-label">Qual é a outra forma de pagamento?</label>
+                <input type="text" class="form-control" name="forma_pagamento_outro" id="formaPagamentoOutro">
+            </div>
+            <div class="mb-3">
+                <label for="valor_pago" class="form-label">Valor Pago</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-cash-coin"></i></span>
+                    <input type="text" class="form-control" name="valor_pago" id="valorPago" required oninput="updateValorTotal()">
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="valor_total" class="form-label">Valor Total</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-wallet2"></i></span>
+                    <input type="text" class="form-control" name="valor_total" id="valorTotal" required readonly>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="tempo_garantia" class="form-label">Tempo de Garantia</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-shield-check"></i></span>
+                    <select class="form-control" name="tempo_garantia" required>
+                        <option value="" disabled selected>Selecione o tempo de garantia</option>
+                        <option value="1">1 Mês</option>
+                        <option value="3">3 Meses</option>
+                        <option value="6">6 Meses</option>
+                        <option value="1ano">1 Ano</option>
+                    </select>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="cap_armazenamento" class="form-label">Capacidade de Armazenamento(GB)</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-memory"></i></span>
+                    <select class="form-control" name="cap_armazenamento" required>
+                        <option value="" disabled selected>Selecione a Capacidade</option>
+                        <option value="Lanterninha">Lanterninha</option>
+                        <option value="16">16 GB</option>
+                        <option value="32">32 GB</option>
+                        <option value="64">64 GB</option>
+                        <option value="128">128 GB</option>
+                        <option value="256">256 GB</option>
+                        <option value="512">512 GB</option>
+                        <option value="1">1 TB</option>
+                    </select>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="observacoes" class="form-label">Observações</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-pencil"></i></span>
+                    <input type="text" class="form-control" name="observacoes">
+                </div>
+            </div>
+            <button type="submit" class="btn btn-success btn-lg">Gerar Recibo</button>
+            <a href="/pages/download-pdf.html.html" class="btn btn-primary btn-lg">Acessar notas (Baixar)</a>
+        </form>
+        
+    </div>
+
+    <footer class="text-center py-3 mt-5">
+        <p>(Versão 0.1.2) Esse sistema foi desenvolvido pelo Assistente Técnico (Guilherme Walisson) para fins comerciais</p>
+    </footer>
+
+    <script src="../useApi.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+</body>
+</html>

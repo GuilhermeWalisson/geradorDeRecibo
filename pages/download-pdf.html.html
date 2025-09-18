@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Documentos Disponíveis</title>
+
+  <!-- ✅ TailwindCSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- ✅ Ícones Feather (para download) -->
+  <script src="https://unpkg.com/feather-icons"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center px-4 py-8">
+
+  <div class="w-full max-w-3xl bg-white shadow-lg rounded-lg p-8">
+    <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">📂 Documentos Disponíveis</h1>
+
+    <!-- ✅ Campo de busca -->
+    <input 
+      type="text" 
+      id="searchInput"
+      placeholder="🔎 Buscar por nota..."
+      class="w-full px-4 py-2 border border-gray-300 rounded-md mb-6 focus:outline-none focus:ring-2 focus:ring-blue-500"
+    />
+
+    <ul id="fileList" class="space-y-4">
+      <li class="text-gray-500 text-center">Carregando arquivos...</li>
+    </ul>
+  </div>
+
+  <script>
+    let allFiles = [];
+
+    // ✅ Função para exibir arquivos filtrados
+    function renderFileList(filteredFiles) {
+      const fileList = document.getElementById('fileList');
+      fileList.innerHTML = '';
+
+      if (filteredFiles.length === 0) {
+        fileList.innerHTML = '<li class="text-center text-gray-500">Nenhum arquivo encontrado.</li>';
+        return;
+      }
+
+      filteredFiles.forEach(file => {
+        const li = document.createElement('li');
+        li.className = 'flex items-center justify-between bg-gray-50 p-4 rounded-md shadow-sm hover:shadow-md transition';
+
+        li.innerHTML = `
+          <span class="text-gray-700 truncate">${file}</span>
+          <button 
+            onclick="window.open('http://localhost:4000/pdfs/${encodeURIComponent(file)}', '_blank')"
+            class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition"
+          >
+            <i data-feather="download" class="w-4 h-4 mr-2"></i> Baixar
+          </button>
+        `;
+        fileList.appendChild(li);
+      });
+
+      feather.replace(); // Recarrega os ícones
+    }
+
+    // ✅ Função para buscar arquivos da API
+    async function loadFiles() {
+      try {
+        const response = await fetch('http://localhost:4000/api/files');
+        const files = await response.json();
+        allFiles = files; // Armazena todos os arquivos para o filtro
+
+        renderFileList(allFiles);
+
+      } catch (error) {
+        console.error('Erro ao carregar arquivos:', error);
+        document.getElementById('fileList').innerHTML =
+          '<li class="text-center text-red-500">Erro ao carregar arquivos.</li>';
+      }
+    }
+
+    // ✅ Função de filtro por nome (input)
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+      const query = e.target.value.toLowerCase();
+      const filtered = allFiles.filter(file => file.toLowerCase().includes(query));
+      renderFileList(filtered);
+    });
+
+    // ✅ Inicialização
+    loadFiles();
+  </script>
+</body>
+</html>
